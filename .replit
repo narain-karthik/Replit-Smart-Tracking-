@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["libGL", "libGLU"]
+packages = ["SDL2", "SDL2_image", "SDL2_mixer", "SDL2_ttf", "fontconfig", "freetype", "gmp", "lcms2", "libGL", "libGLU", "libimagequant", "libjpeg", "libpng", "libtiff", "libwebp", "libxcrypt", "openjpeg", "pkg-config", "portmidi", "tcl", "tk", "zlib"]
 
 [workflows]
 runButton = "Project"
