@@ -16,22 +16,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Anti-Theft App"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Anti-Theft Server"
-
-[[workflows.workflow]]
-name = "Anti-Theft App"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[workflows.workflow]]
 name = "Anti-Theft Server"
@@ -47,4 +32,8 @@ outputType = "webview"
 
 [[ports]]
 localPort = 46289
+externalPort = 80
+
+[[ports]]
+localPort = 5000
 externalPort = 80

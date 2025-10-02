@@ -190,14 +190,51 @@ def health_check():
         'device_id': device_manager.get_device_id()
     })
 
-if __name__ == '__main__':
+@app.route('/', methods=['GET'])
+def index():
     api_creds = api_auth.get_api_credentials()
     
     if not api_creds:
-        print("ERROR: Device not registered. Please run main.py first to register the device.")
+        return jsonify({
+            'status': 'not_registered',
+            'message': 'Device not registered yet',
+            'device_id': device_manager.get_device_id(),
+            'instructions': 'Run main.py (GUI application) to register this device and generate an API key',
+            'endpoints': {
+                'health': 'GET /health - Health check',
+                'note': 'All other endpoints require device registration and API key'
+            }
+        })
+    
+    return jsonify({
+        'status': 'ready',
+        'device_id': device_manager.get_device_id(),
+        'owner': api_creds.get('user_name'),
+        'endpoints': {
+            'status': 'GET /api/status - Get device status',
+            'lock': 'POST /api/lock - Lock device remotely',
+            'unlock': 'POST /api/unlock - Unlock device',
+            'location': 'GET /api/location - Get current location',
+            'alarm': 'POST /api/alarm - Trigger alarm',
+            'capture': 'POST /api/capture - Capture evidence',
+            'logs': 'GET /api/logs - Get event logs',
+            'device_info': 'GET /api/device-info - Get device information',
+            'health': 'GET /health - Health check'
+        },
+        'authentication': 'Use header: X-API-Key: YOUR_API_KEY'
+    })
+
+if __name__ == '__main__':
+    api_creds = api_auth.get_api_credentials()
+    
+    print(f"Anti-Theft Remote Server Starting...")
+    print(f"Device ID: {device_manager.get_device_id()}")
+    
+    if not api_creds:
+        print("\n⚠️  WARNING: Device not registered")
+        print("To use the remote API, run main.py first to register the device.")
+        print("The server will still start for setup purposes.")
     else:
-        print(f"Anti-Theft Remote Server Starting...")
-        print(f"Device ID: {device_manager.get_device_id()}")
         print(f"Owner: {api_creds.get('user_name')}")
         print(f"API Key: {api_creds.get('api_key')}")
         print("\nRemote API Endpoints:")
@@ -206,10 +243,10 @@ if __name__ == '__main__':
         print("  POST /api/unlock        - Unlock device")
         print("  GET  /api/location      - Get current location")
         print("  POST /api/alarm         - Trigger alarm")
-        print("  POST /api/alarm         - Capture evidence")
+        print("  POST /api/capture       - Capture evidence")
         print("  GET  /api/logs          - Get event logs")
         print("  GET  /api/device-info   - Get device information")
         print("\nUse header: X-API-Key: YOUR_API_KEY")
-        print("\nServer listening on http://0.0.0.0:5000")
-        
-        app.run(host='0.0.0.0', port=5000, debug=False)
+    
+    print("\nServer listening on http://0.0.0.0:5000")
+    app.run(host='0.0.0.0', port=5000, debug=False)
