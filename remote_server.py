@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template_string
 import os
 from api_auth_manager import APIAuthManager
 from device_manager import DeviceManager
@@ -193,36 +193,164 @@ def health_check():
 @app.route('/', methods=['GET'])
 def index():
     api_creds = api_auth.get_api_credentials()
+    device_id = device_manager.get_device_id()
     
     if not api_creds:
-        return jsonify({
-            'status': 'not_registered',
-            'message': 'Device not registered yet',
-            'device_id': device_manager.get_device_id(),
-            'instructions': 'Run main.py (GUI application) to register this device and generate an API key',
-            'endpoints': {
-                'health': 'GET /health - Health check',
-                'note': 'All other endpoints require device registration and API key'
-            }
-        })
+        html = '''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Anti-Theft API - Not Registered</title>
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; background: #f5f5f5; }
+                .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                h1 { color: #ff9800; }
+                .warning { background: #fff3cd; border-left: 4px solid #ff9800; padding: 15px; margin: 20px 0; }
+                .device-id { background: #e3f2fd; padding: 10px; border-radius: 5px; font-family: monospace; }
+                code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🔒 Laptop Anti-Theft Protection API</h1>
+                <div class="warning">
+                    <h2>⚠️ Device Not Registered</h2>
+                    <p>This device needs to be registered before you can use the remote API.</p>
+                </div>
+                <h3>Device Information</h3>
+                <div class="device-id">Device ID: ''' + device_id + '''</div>
+                <h3>Setup Instructions</h3>
+                <ol>
+                    <li>Run <code>python main.py</code> on this device</li>
+                    <li>Register the device with your information</li>
+                    <li>Save the API Key that is displayed</li>
+                    <li>Restart this server</li>
+                </ol>
+                <h3>Available Endpoints (After Registration)</h3>
+                <ul>
+                    <li><code>GET /health</code> - Health check (no auth required)</li>
+                    <li>All other endpoints require device registration and API key</li>
+                </ul>
+            </div>
+        </body>
+        </html>
+        '''
+        return render_template_string(html)
     
-    return jsonify({
-        'status': 'ready',
-        'device_id': device_manager.get_device_id(),
-        'owner': api_creds.get('user_name'),
-        'endpoints': {
-            'status': 'GET /api/status - Get device status',
-            'lock': 'POST /api/lock - Lock device remotely',
-            'unlock': 'POST /api/unlock - Unlock device',
-            'location': 'GET /api/location - Get current location',
-            'alarm': 'POST /api/alarm - Trigger alarm',
-            'capture': 'POST /api/capture - Capture evidence',
-            'logs': 'GET /api/logs - Get event logs',
-            'device_info': 'GET /api/device-info - Get device information',
-            'health': 'GET /health - Health check'
-        },
-        'authentication': 'Use header: X-API-Key: YOUR_API_KEY'
-    })
+    owner = api_creds.get('user_name')
+    api_key = api_creds.get('api_key')
+    
+    html = '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Anti-Theft API Dashboard</title>
+        <style>
+            body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
+            .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            h1 { color: #4CAF50; margin-bottom: 10px; }
+            .status { background: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; margin: 10px 0; }
+            .info-box { background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 15px 0; }
+            .api-key-box { background: #fff3cd; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #ff9800; }
+            .endpoint { background: #f9f9f9; padding: 12px; margin: 8px 0; border-left: 4px solid #4CAF50; border-radius: 3px; }
+            .method { display: inline-block; padding: 4px 8px; border-radius: 3px; font-weight: bold; font-size: 12px; margin-right: 10px; }
+            .get { background: #2196F3; color: white; }
+            .post { background: #ff9800; color: white; }
+            code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; font-size: 14px; }
+            .copy-btn { background: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer; margin-left: 10px; }
+            .copy-btn:hover { background: #45a049; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🔒 Laptop Anti-Theft Protection API</h1>
+            <div class="status">✓ Server Running</div>
+            
+            <div class="info-box">
+                <h3>Device Information</h3>
+                <p><strong>Device ID:</strong> <code>''' + device_id + '''</code></p>
+                <p><strong>Owner:</strong> ''' + owner + '''</p>
+            </div>
+            
+            <div class="api-key-box">
+                <h3>🔑 Your API Key</h3>
+                <p><code id="apiKey">''' + api_key + '''</code>
+                <button class="copy-btn" onclick="copyApiKey()">Copy</button></p>
+                <p><small>⚠️ Keep this key secret! Anyone with this key can control your device.</small></p>
+            </div>
+            
+            <h2>📡 API Endpoints</h2>
+            <p>All requests must include the header: <code>X-API-Key: YOUR_API_KEY</code></p>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/status</code>
+                <p>Get device status and system information</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/lock</code>
+                <p>Lock the device remotely with a custom message</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/unlock</code>
+                <p>Unlock the device remotely</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/location</code>
+                <p>Get current device location (IP-based)</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/alarm</code>
+                <p>Trigger the alarm on the device</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <code>/api/capture</code>
+                <p>Capture evidence (webcam photo + screenshot)</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/logs</code>
+                <p>Get recent event logs</p>
+            </div>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <code>/api/device-info</code>
+                <p>Get detailed device information and lock status</p>
+            </div>
+            
+            <h2>📖 Example Usage</h2>
+            <pre style="background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto;">
+curl -X GET http://localhost:5000/api/status \\
+  -H "X-API-Key: ''' + api_key + '''"
+            </pre>
+            
+            <p><small>💡 Check the <code>README.md</code> file for complete documentation and Python examples.</small></p>
+        </div>
+        
+        <script>
+            function copyApiKey() {
+                const apiKey = document.getElementById('apiKey').innerText;
+                navigator.clipboard.writeText(apiKey).then(() => {
+                    alert('API Key copied to clipboard!');
+                });
+            }
+        </script>
+    </body>
+    </html>
+    '''
+    return render_template_string(html)
 
 if __name__ == '__main__':
     api_creds = api_auth.get_api_credentials()
