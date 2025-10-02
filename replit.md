@@ -124,7 +124,32 @@ See `remote_client_example.py` for a Python client to control your device remote
 - Credential-protected device management
 - Salt-based key derivation with unique device salt
 
+## Replit Environment Setup
+This project is configured to run in Replit with the following setup:
+- **Python 3.11** with all required dependencies installed
+- **Flask Backend Server** running on port 5000 (remote_server.py)
+- **System Dependencies**: OpenGL, SDL2 for graphics and audio support
+- **Deployment**: Configured with Gunicorn for production (VM deployment)
+
+### Running in Replit
+The remote API server starts automatically and is accessible via the web preview.
+- **Development**: `python remote_server.py` (runs automatically in workflow)
+- **Production**: Gunicorn with 2 workers on port 5000
+
+### Important Notes for Replit
+- The GUI application (main.py) requires a graphical display and won't run in the web environment
+- To use the full features, you need to register the device first by running main.py locally
+- The remote server provides a REST API for controlling the device
+- Audio features may be limited in headless environments
+
 ## Recent Changes
+- 2025-10-02: Replit Environment Setup
+  - Configured Python 3.11 environment with all dependencies
+  - Set up Flask backend workflow on port 5000
+  - Added deployment configuration with Gunicorn
+  - Enhanced remote server to handle unregistered device state gracefully
+  - Added root endpoint (/) with API documentation and status
+
 - 2025-10-02: Security and Remote Access Update
   - **CRITICAL FIX**: Replaced insecure plaintext key storage with PBKDF2 password-based key derivation
   - **NEW**: Added Flask-based remote API server for actual remote control functionality
