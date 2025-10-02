@@ -1,0 +1,34 @@
+Smart Ant-Theft Application for Laptop 
+
+MVP (must-have)
+
+Device registration & secure account — user signs up; device links to account with device ID and strong keys.
+
+Remote lock / show message — lock screen remotely and display owner contact / reward message.
+
+Location tracking — approximate geolocation via IP + Wi-Fi SSID triangulation (no GPS required).
+
+Theft evidence capture — capture webcam photo(s) and system screenshot(s) when suspicious event triggers.
+
+Tamper-resistance / service mode — agent runs as a system service/daemon and restarts automatically; uninstall requires credentials.
+
+Alarm / loud siren — trigger loud sound even if volume is low.
+
+Event logging & export — record timestamps, IPs, nearby Wi-Fi SSIDs, photos; exportable as evidence for police.
+
+Secondary (near-term)
+8. Proximity locking — lock/unlock when paired smartphone (Bluetooth LE) moves away/returns.
+9. Automatic trigger detection — detect suspicious events: repeated wrong password attempts, boot from external media, account change.
+10. Geo-fencing — alerts when device leaves/enters defined area.
+11. Remote wipe / selective wipe — erase sensitive folders or securely wipe disk (opt-in, with warnings).
+12. Network blocker — disable network adapters or firewall rules to stop remote access (careful UX).
+13. Snapshot of active sessions / running processes — helps forensic context.
+
+Advanced / Nice-to-have
+14. SIM/LTE support & SIM-change alerts — for laptops with cellular modems.
+15. Offline caching / delayed upload — store evidence locally and auto-upload when online.
+16. Hardware tamper detection — trigger alerts if case opened (where sensors available).
+17. Integration with law enforcement export flow — packaged report with evidence and timeline.
+18. Peer beaconing — crowd-sourced discovery: other app users can help detect nearby stolen device beacons (privacy-first).
+19. Anti-snoop features — remote screenshot on suspect user, clipboard monitoring (very sensitive — see legal).
+20. Enterprise mode — remote management/dashboard for organizations.
