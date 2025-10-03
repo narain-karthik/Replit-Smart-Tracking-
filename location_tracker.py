@@ -34,8 +34,16 @@ class LocationTracker:
         
         try:
             if system == "Windows":
-                output = subprocess.check_output(['netsh', 'wlan', 'show', 'networks'], 
-                                                encoding='utf-8', errors='ignore')
+                result = subprocess.run(['netsh', 'wlan', 'show', 'networks'], 
+                                       capture_output=True, 
+                                       encoding='utf-8', 
+                                       errors='ignore',
+                                       timeout=5)
+                
+                if result.returncode != 0:
+                    return []
+                
+                output = result.stdout
                 ssids = re.findall(r'SSID \d+ : (.+)', output)
                 signals = re.findall(r'Signal\s+:\s+(\d+)%', output)
                 
@@ -46,9 +54,16 @@ class LocationTracker:
                     })
             
             elif system == "Linux":
-                output = subprocess.check_output(['nmcli', '-f', 'SSID,SIGNAL', 'dev', 'wifi'], 
-                                                encoding='utf-8', errors='ignore')
-                lines = output.split('\n')[1:]
+                result = subprocess.run(['nmcli', '-f', 'SSID,SIGNAL', 'dev', 'wifi'], 
+                                       capture_output=True,
+                                       encoding='utf-8', 
+                                       errors='ignore',
+                                       timeout=5)
+                
+                if result.returncode != 0:
+                    return []
+                
+                lines = result.stdout.split('\n')[1:]
                 for line in lines:
                     if line.strip():
                         parts = line.strip().split()
@@ -59,9 +74,16 @@ class LocationTracker:
                             })
             
             elif system == "Darwin":
-                output = subprocess.check_output(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-s'], 
-                                                encoding='utf-8', errors='ignore')
-                lines = output.split('\n')[1:]
+                result = subprocess.run(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-s'], 
+                                       capture_output=True,
+                                       encoding='utf-8', 
+                                       errors='ignore',
+                                       timeout=5)
+                
+                if result.returncode != 0:
+                    return []
+                
+                lines = result.stdout.split('\n')[1:]
                 for line in lines:
                     if line.strip():
                         parts = line.strip().split()
@@ -70,8 +92,8 @@ class LocationTracker:
                                 'ssid': parts[0],
                                 'signal': parts[2] if len(parts) > 2 else 'N/A'
                             })
-        except Exception as e:
-            print(f"WiFi scan error: {e}")
+        except Exception:
+            pass
         
         return networks
     
