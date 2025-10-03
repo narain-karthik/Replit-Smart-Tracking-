@@ -12,6 +12,7 @@ MVP implementation complete with all core security features:
 - ✅ Loud alarm system with volume bypass capability
 - ✅ Comprehensive event logging with export functionality
 - ✅ Tkinter-based GUI for easy management
+- ✅ **NEW: Web-based control dashboard** - Login and control device via web browser
 
 ## Project Structure
 ```
@@ -68,6 +69,18 @@ MVP implementation complete with all core security features:
 - Evidence attachments to events
 - Export evidence reports for law enforcement
 
+### 7. Web Control Dashboard (NEW)
+- Browser-based login with email/password authentication
+- Real-time device status monitoring
+- Remote lock/unlock controls
+- Location tracking and mapping
+- Alarm triggering
+- Evidence capture
+- Activity logs viewing
+- Responsive design for mobile and desktop
+- Session-based authentication
+- Works alongside REST API
+
 ## Dependencies
 - opencv-python: Webcam capture
 - pillow: Screenshot capture
@@ -85,15 +98,37 @@ MVP implementation complete with all core security features:
 - Audio device (optional, for alarm functionality)
 
 ## Remote Access
-The application includes a Flask-based remote API server that allows you to control the device from anywhere:
+The application includes two ways to remotely control your device:
 
-### Starting the Remote Server
+### 1. Web Dashboard (Recommended for Users)
+Access the web-based control panel through any browser:
+
+**URL:** `http://your-replit-url.repl.co/web/login`
+
+**Features:**
+- Login with your registration email and password
+- Beautiful, responsive dashboard
+- One-click device control (lock, unlock, alarm, capture)
+- Real-time status updates
+- Location tracking with detailed information
+- Activity logs viewer
+- No API key needed - uses session authentication
+
+**How to Use:**
+1. Navigate to `/web/login` in your browser
+2. Login with the same email/password from device registration
+3. Use the dashboard to control your device
+
+### 2. REST API (For Developers)
+Programmatic control via REST API endpoints:
+
+**Starting the Remote Server:**
 ```bash
 python remote_server.py
 ```
 The server runs on port 5000 and requires the device to be registered first.
 
-### Remote API Endpoints
+**API Endpoints:**
 All endpoints require authentication via `X-API-Key` header.
 
 - `GET /api/status` - Get device status
@@ -105,14 +140,22 @@ All endpoints require authentication via `X-API-Key` header.
 - `GET /api/logs` - Get event logs
 - `GET /api/device-info` - Get device information
 
-### Using the Remote Client
+**Using the Remote Client:**
 See `remote_client_example.py` for a Python client to control your device remotely.
 
 ## Usage
+
+### GUI Application (Local)
 1. Run the application: `python main.py`
 2. First time: Register device with owner information
 3. Login with credentials to access control panel
 4. Use tabs to manage: Status, Lock, Location, Evidence, Alarm, Logs
+
+### Web Dashboard (Remote)
+1. Open browser and navigate to your Replit URL + `/web/login`
+2. Login with the same credentials from device registration
+3. Control device from anywhere through the web interface
+4. Features: Lock, Unlock, Location, Alarm, Evidence Capture, Logs
 
 ## Security Features
 - All user data encrypted with AES-256-EAX mode
@@ -143,6 +186,17 @@ The remote API server starts automatically and is accessible via the web preview
 - Audio features may be limited in headless environments
 
 ## Recent Changes
+- 2025-10-03: Web Control Dashboard Added
+  - ✅ **NEW**: Web-based login page with email/password authentication
+  - ✅ **NEW**: Interactive control dashboard with real-time updates
+  - ✅ **NEW**: Session-based authentication using Flask sessions
+  - ✅ Web dashboard features: lock, unlock, location, alarm, capture, logs
+  - ✅ Beautiful responsive UI with gradient design
+  - ✅ Auto-refreshing status and activity logs
+  - ✅ Works alongside existing REST API endpoints
+  - Users can now control device from browser without API keys
+  - Access via `/web/login` with registration credentials
+
 - 2025-10-02: GitHub Import Completed - Replit Environment Setup
   - ✅ Installed Python 3.11 with all required dependencies
   - ✅ Installed system dependencies: libGL, libGLU, SDL2, SDL2_mixer
